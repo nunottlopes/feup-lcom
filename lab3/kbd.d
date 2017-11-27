@@ -1,0 +1,2 @@
+
+kbd.o:	kbd.S
