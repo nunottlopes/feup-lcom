@@ -8,7 +8,7 @@
 
 //Keyboard functions
 
-static int kbdhook = 1;
+static int kbdhook = 0x01;
 extern unsigned long kbdass();
 
 int kbd_subscribe_int() {

@@ -3,7 +3,7 @@
 
 
 #define BIT(n) 		 (0x01<<(n))
-#define KBC_IRQ		 0x01
+#define KBC_IRQ		 1
 #define DELAY_US     20000
 #define OUT_BUF		 0x60
 #define OUT_BUF_FULL 0x01
@@ -20,6 +20,11 @@
 #define TO_ERR  	 BIT(5)
 #define OBF 		 BIT(0)
 #define AUX			 BIT(5)
+#define MOUSE_IRQ	 12
+#define IBF			 BIT(1)
+#define SET_STREAM_MODE 0xEA
+#define D_DATA_REPORT 0xF5
+#define E_DATA_REPORT 0xF4
 
 
 #endif

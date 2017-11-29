@@ -7,7 +7,7 @@
 #include "i8254.h"
 
 unsigned int contador = 0;
-static int hook = 0;
+static int hook = 0x03;
 unsigned long frequencianormal = 60;
 
 int timer_get_conf(unsigned char timer, unsigned char *st) {
