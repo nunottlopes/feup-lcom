@@ -39,6 +39,8 @@ mouse rato;
 int mouse_counter = 0;
 int current_x = 512; //current x position of the mouse
 int current_y = 384; //current y position of the mouse
+int previous_x; //previous x position to clear the last position of the mouse
+int previous_y; //previous y position to clear the last position of the mouse
 
 int open_game(){
 
@@ -59,9 +61,7 @@ int open_game(){
 		return 1;
 
 	start_mouse();
-
-	unsigned int mouse;
-	unsigned long key_register;
+	unsigned long mouse; //to clear the mouse buf
 
 	int sair = 0; //variable to exit the game
 
@@ -129,12 +129,15 @@ int open_game(){
 
 				//Handling the mouse interrupts
 				if (msg.NOTIFY_ARG & irq_set_mouse) {
-					sys_inb(OUT_BUF, &key_register);
-					mouse = (unsigned int) key_register;
+					if(opcao != GAME_ON){
+						sys_inb(OUT_BUF, &mouse); //to clear the mouse buf when it isn't needed
+					}
 					if(opcao == GAME_ON){
-						if(mouse_game_handler() == 1){
-							//pixmap = read_xpm(scope2, &width, &height);
-							//draw_pixmap(pixmap, current_x, current_y, width, height);
+						previous_x = current_x;
+						previous_y = current_y;
+						if(mouse_game_handler() == 2){
+							pixmap = read_xpm(scope2, &width, &height);
+							draw_pixmap(pixmap, previous_x, previous_y, width, height);
 						}
 						pixmap = read_xpm(scope1, &width, &height);
 						draw_pixmap(pixmap, current_x, current_y, width, height);
@@ -186,12 +189,12 @@ int mouse_game_handler(){
 			if(packet[0]&BIT(4)){ //if x is negative
 				signed char x = packet[1];
 				rato.x = x;
-				if (current_x - rato.x <= 0)
+				if (current_x + rato.x <= 0)
 				{
 					current_x = 0;
 				}
 				else
-					current_x = current_x - rato.x;
+					current_x += rato.x;
 			}
 			else{
 				rato.x = packet[1];
@@ -200,18 +203,18 @@ int mouse_game_handler(){
 					current_x = 1024 - 25;
 				}
 				else
-					current_x = current_x + rato.x;
+					current_x += rato.x;
 			}
 
 			if(packet[0]&BIT(5)){ //if y is negative
 				signed char y = packet[2];
 				rato.y = y;
-				if (current_y + rato.y + 25 >= 768)
+				if (current_y - rato.y + 25 >= 768)
 				{
 					current_y = 768 - 25;
 				}
 				else
-					current_y = current_y + rato.y;
+					current_y -= rato.y;
 			}
 			else{
 				rato.y = packet[2];
@@ -220,10 +223,10 @@ int mouse_game_handler(){
 					current_y = 0;
 				}
 				else
-					current_y = current_y - rato.y;
+					current_y -= rato.y;
 			}
 			mouse_counter = 0;
-			return 1;
+			return 2;
 	 	}
 	}
 	return 0;
