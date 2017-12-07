@@ -22,7 +22,8 @@
 enum menu{
 	START,	//start button
 	QUIT,	//quit button
-	GAME_ON	//game running
+	GAME_ON,	//game running
+	GAME_OVER	//game ended
 };
 
 //Struct to control the mouse
@@ -36,11 +37,29 @@ typedef struct
 enum menu opcao = START; //The first position when the game starts is the start button
 
 mouse rato;
+int mouseposition = 0;
 int mouse_counter = 0;
-int current_x = 512; //current x position of the mouse
-int current_y = 384; //current y position of the mouse
-int previous_x; //previous x position to clear the last position of the mouse
-int previous_y; //previous y position to clear the last position of the mouse
+int mouse_current_x = 512; //current x position of the mouse
+int mouse_current_y = 384; //current y position of the mouse
+int mouse_previous_x = 512; //previous x position to clear the last position of the mouse
+int mouse_previous_y = 384; //previous y position to clear the last position of the mouse
+
+int timer_counter_1 = 0;
+int timer_counter_2 = 0;
+int timer_counter_3 = 0;
+int monster_current_x = 512; //current x position of the monster
+int monster_current_y = 384; //current y position of the monster
+int monster_previous_x = 512; //previous x position to clear the last position of the monster
+int monster_previous_y = 384; //previous y position to clear the last position of the monster
+int monster_speed = 120; //the monster starts with a delay of 2 seconds, every 5 seconds the speed increases
+
+int score_points = 0; //score of the game, for every hit the player gets 10 points
+int bullets = 10; //bullets in the weapon, every time space bar is pressed they are recharged
+int game_time = 0; //the time the player plays the game (in seconds)
+
+//to check how many monsters the player missed, if it is bigger than 5 the game ends
+int monsters_spawn = 0;
+int monsters_hit = 0;
 
 int open_game(){
 
@@ -78,16 +97,16 @@ int open_game(){
 				if (msg.NOTIFY_ARG & irq_set_kbd) {
 					type = kbd_test_scan_C();
 					if(opcao == START){
-						//pixmap = read_xpm(titulo, &width, &height);
-						//draw_pixmap(pixmap, 10, 10, width, height);
+						pixmap = read_xpm(titulo, &width, &height);
+						draw_pixmap(pixmap, 184, 100, width, height);
 						pixmap = read_xpm(play2, &width, &height);
 						draw_pixmap(pixmap, 362, 340, width, height);
 						pixmap = read_xpm(quit, &width, &height);
 						draw_pixmap(pixmap, 379, 480, width, height);
 					}
 					if(opcao == QUIT){
-						//pixmap = read_xpm(titulo, &width, &height);
-						//draw_pixmap(pixmap, 10, 10, width, height);
+						pixmap = read_xpm(titulo, &width, &height);
+						draw_pixmap(pixmap, 184, 100, width, height);
 						pixmap = read_xpm(play, &width, &height);
 						draw_pixmap(pixmap, 362, 340, width, height);
 						pixmap = read_xpm(quit2, &width, &height);
@@ -108,7 +127,16 @@ int open_game(){
 						if(opcao == START){
 							opcao = GAME_ON;
 							clean_screen();
-							//start game
+							draw_time_score_bar();
+							pixmap = read_xpm(time, &width, &height);
+							draw_pixmap(pixmap, 654, 5, width, height);
+							pixmap = read_xpm(score, &width, &height);
+							draw_pixmap(pixmap, 845, 5, width, height);
+							pixmap = read_xpm(bullettext, &width, &height);
+							draw_pixmap(pixmap, 10, 5, width, height);
+							score_handler();
+							time_handler();
+							bullets_handler();
 						}
 						if(opcao == QUIT) //exit game
 							sair = -1;
@@ -116,6 +144,8 @@ int open_game(){
 					if(type == ESPACO){
 						if(opcao == GAME_ON){
 						//to reload the weapon
+							bullets = 10;
+							bullets_handler();
 						}
 					}
 				}
@@ -123,7 +153,45 @@ int open_game(){
 				//Handling the timer interrupts
 				if (msg.NOTIFY_ARG & irq_set_timer) {
 					if(opcao == GAME_ON){
+						if(timer_counter_1/300){
+							if(monster_speed > 30){
+								monster_speed -= 5; //still need to check how fast i want the monster to start disappearing fast
+							}
+							timer_counter_1 = 0;
+						}
+						if(timer_counter_2/monster_speed){
+							monster_previous_x = monster_current_x;
+							monster_previous_y = monster_current_y;
+							pixmap = read_xpm(penguin2, &width, &height);
+							draw_pixmap(pixmap, monster_previous_x, monster_previous_y, width, height);
+							draw_scope(mouse_current_x, mouse_current_y);
+							monster_current_x = rand() % 960;
+							monster_current_y = (rand() % 674) + 30;
+							monsters_spawn++;
+							pixmap = read_xpm(penguin1, &width, &height);
+							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+							draw_scope(mouse_current_x, mouse_current_y);
 
+							timer_counter_2 = 0;
+						}
+						if(timer_counter_3/60){
+							game_time++;
+							time_handler();
+							timer_counter_3 = 0;
+						}
+						timer_counter_1++;
+						timer_counter_2++;
+						timer_counter_3++;
+
+						//check if the player missed 5 monsters and if so the game is over
+						if((monsters_spawn - monsters_hit) > 5)
+							opcao = GAME_OVER;
+					}
+					if(opcao == GAME_OVER){
+						//cleans the screen, waits for 3 seconds and then exits the game
+						//clean_screen();
+
+						sair = -1;
 					}
 				}
 
@@ -133,14 +201,31 @@ int open_game(){
 						sys_inb(OUT_BUF, &mouse); //to clear the mouse buf when it isn't needed
 					}
 					if(opcao == GAME_ON){
-						previous_x = current_x;
-						previous_y = current_y;
-						if(mouse_game_handler() == 2){
-							pixmap = read_xpm(scope2, &width, &height);
-							draw_pixmap(pixmap, previous_x, previous_y, width, height);
+						mouse_previous_x = mouse_current_x;
+						mouse_previous_y = mouse_current_y;
+						mouseposition = mouse_game_handler();
+						if(mouseposition == 2){
+							clean_scope(mouse_previous_x, mouse_previous_y);
+							pixmap = read_xpm(penguin1, &width, &height);
+							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
 						}
-						pixmap = read_xpm(scope1, &width, &height);
-						draw_pixmap(pixmap, current_x, current_y, width, height);
+						pixmap = read_xpm(penguin1, &width, &height);
+						draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+						draw_scope(mouse_current_x, mouse_current_y);
+
+						//shooting (pressing mouse left button)
+						if((rato.LB == 1) && (rato.x == 0) && (rato.y == 0) && (mouseposition == 2)){
+							if(bullets > 0){
+								//code to handle if the player hit the monster
+								if((mouse_current_x > (monster_current_x - 12)) && (mouse_current_x < (monster_current_x + 52)) && (mouse_current_y > (monster_current_y - 12)) && (mouse_current_y < (monster_current_y + 52))){
+									score_points += 10; //for each monster hit the score increases in 10 points
+									monsters_hit++;
+								}
+								bullets--;
+							}
+							score_handler();
+							bullets_handler();
+						}
 					}
 				}
 
@@ -189,41 +274,41 @@ int mouse_game_handler(){
 			if(packet[0]&BIT(4)){ //if x is negative
 				signed char x = packet[1];
 				rato.x = x;
-				if (current_x + rato.x <= 0)
+				if (mouse_current_x + rato.x <= 0)
 				{
-					current_x = 0;
+					mouse_current_x = 0;
 				}
 				else
-					current_x += rato.x;
+					mouse_current_x += rato.x;
 			}
 			else{
 				rato.x = packet[1];
-				if (current_x + rato.x + 25 >= 1024)
+				if (mouse_current_x + rato.x + 25 >= 1024)
 				{
-					current_x = 1024 - 25;
+					mouse_current_x = 1024 - 25;
 				}
 				else
-					current_x += rato.x;
+					mouse_current_x += rato.x;
 			}
 
 			if(packet[0]&BIT(5)){ //if y is negative
 				signed char y = packet[2];
 				rato.y = y;
-				if (current_y - rato.y + 25 >= 768)
+				if (mouse_current_y - rato.y + 25 >= 768)
 				{
-					current_y = 768 - 25;
+					mouse_current_y = 768 - 25;
 				}
 				else
-					current_y -= rato.y;
+					mouse_current_y -= rato.y;
 			}
 			else{
 				rato.y = packet[2];
-				if (current_y - rato.y <= 0)
+				if (mouse_current_y - rato.y <= 30)
 				{
-					current_y = 0;
+					mouse_current_y = 31;
 				}
 				else
-					current_y -= rato.y;
+					mouse_current_y -= rato.y;
 			}
 			mouse_counter = 0;
 			return 2;
@@ -232,4 +317,35 @@ int mouse_game_handler(){
 	return 0;
 }
 
+int score_handler(){
+	int milhares = score_points / 1000;
+	int centenas = (score_points - milhares*1000)/100;
+	int dezenas = (score_points - milhares*1000 - centenas*100)/10;
+	int unidades = (score_points - milhares*1000 - centenas*100 - dezenas*10);
+	draw_number(milhares,945,7);
+	draw_number(centenas,964,7);
+	draw_number(dezenas,983,7);
+	draw_number(unidades,1002,7);
+	return 0;
+}
 
+int time_handler(){
+	int width, height;
+	char *pixmap;
+	int segundos = 0;
+	int minutos = 0;
+	pixmap = read_xpm(twodots, &width, &height);
+	draw_pixmap(pixmap, 782, 8, width, height);
+	minutos =  game_time / 60;
+	segundos = game_time % 60;
+	draw_number(minutos/10,744,7);
+	draw_number(minutos%10,763,7);
+	draw_number(segundos/10,791,7);
+	draw_number(segundos%10,810,7);
+	return 0;
+}
+
+int bullets_handler(){
+	draw_bullets(bullets);
+	return 0;
+}

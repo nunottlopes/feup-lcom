@@ -7,6 +7,8 @@
 
 #include "vbe.h"
 #include "i8254.h"
+#include "pixmap.h"
+#include "read_xpm.h"
 
 
 /* Private global variables */
@@ -111,19 +113,17 @@ int paint_pixel(unsigned short x, unsigned short y, unsigned long color){
 	return 0;
 }
 
-int draw_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color){
+int draw_time_score_bar(){
 
-	unsigned centroh = h_res/2, centrov = v_res/2;
-	y = centrov + y - size / 2;
-	x = centroh + x - size / 2;
+	short y=0;
+	short x=0;
 
 	unsigned short xtemporario = x;
-	unsigned short xmax = x + size, ymax = y + size;
-
+	unsigned short xmax = 1024, ymax = 30;
 
 	while(y <= ymax){
 		while(xtemporario <= xmax){
-			paint_pixel(xtemporario,y,color);
+			paint_pixel(xtemporario,y,23);
 			xtemporario++;
 		}
 		xtemporario = x;
@@ -132,46 +132,6 @@ int draw_square(unsigned short x, unsigned short y, unsigned short size, unsigne
 
 	return 0;
 }
-
-
-int draw_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color){
-
-	//Bresenham’s Line Drawing Algorithm
-
-	int dx =  abs (xf - xi);
-	int dy = -abs (yf - yi);
-	int sx, sy;
-
-	if(xi < xf)
-		sx = 1;
-	else
-		sx = -1;
-
-	if(yi < yf)
-		sy = 1;
-	else
-		sy = -1;
-
-	int erro = dx + dy;
-	int e2;
-
-	while (1){
-		paint_pixel(xi,yi,color);
-		if (xi == xf && yi == yf)
-			break;
-		e2 = 2 * erro;
-		if (e2 >= dy) {
-			erro += dy;
-			xi += sx;
-		}
-		if (e2 <= dx) {
-			erro += dx;
-			yi += sy;
-		}
-	}
-	return 0;
-}
-
 
 int draw_pixmap(char *pixmap, short x, short y, int width, int height){
 
@@ -190,6 +150,361 @@ int draw_pixmap(char *pixmap, short x, short y, int width, int height){
 		width_counter++;
 	}
 
+	return 0;
+}
+
+int draw_number(int number, int x, int y){
+	int width, height;
+	char *pixmap;
+	switch(number){
+	case 0:
+		pixmap = read_xpm(zero, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 1:
+		pixmap = read_xpm(one, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 2:
+		pixmap = read_xpm(two, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 3:
+		pixmap = read_xpm(three, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 4:
+		pixmap = read_xpm(four, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 5:
+		pixmap = read_xpm(five, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 6:
+		pixmap = read_xpm(six, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 7:
+		pixmap = read_xpm(seven, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 8:
+		pixmap = read_xpm(eight, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	case 9:
+		pixmap = read_xpm(nine, &width, &height);
+		draw_pixmap(pixmap, x, y, width, height);
+		break;
+	}
+	return 0;
+}
+
+int draw_bullets(int number){
+	int width, height;
+	char *pixmap;
+	switch(number){
+	case 10:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 9:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 8:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 7:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 6:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 5:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 4:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 3:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 2:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 1:
+		pixmap = read_xpm(bullet, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	case 0:
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 145, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 162, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 179, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 196, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 213, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 230, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 247, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 264, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 281, 7, width, height);
+		pixmap = read_xpm(bullet2, &width, &height);
+		draw_pixmap(pixmap, 298, 7, width, height);
+		break;
+	}
+}
+
+int draw_scope(int x, int y){
+	int i, n, m;
+	for(i = 7; i < 18; i++){
+		paint_pixel(x+i,y,63);
+		paint_pixel(x+i,y+24,63);
+		paint_pixel(x,y+i,63);
+		paint_pixel(x+24,y+i,63);
+	}
+	for(i = 0; i < 24; i++){
+		paint_pixel(x+12,y+i,63);
+		paint_pixel(x+i,y+12,63);
+	}
+	n = 6, m = 18;
+	for(i = 1; i < 7; i++){
+		paint_pixel(x+n,y+i,63);
+		n--;
+		paint_pixel(x+m,y+i,63);
+		m++;
+	}
+	n = 1, m = 23;
+	for(i = 18; i < 24; i++){
+		paint_pixel(x+n,y+i,63);
+		n++;
+		paint_pixel(x+m,y+i,63);
+		m--;
+	}
+	return 0;
+}
+
+int clean_scope(int x, int y){
+	int i, n, m;
+	for(i = 7; i < 18; i++){
+		paint_pixel(x+i,y,0);
+		paint_pixel(x+i,y+24,0);
+		paint_pixel(x,y+i,0);
+		paint_pixel(x+24,y+i,0);
+	}
+	for(i = 0; i < 24; i++){
+		paint_pixel(x+12,y+i,0);
+		paint_pixel(x+i,y+12,0);
+	}
+	n = 6, m = 18;
+	for(i = 1; i < 7; i++){
+		paint_pixel(x+n,y+i,0);
+		n--;
+		paint_pixel(x+m,y+i,0);
+		m++;
+	}
+	n = 1, m = 23;
+	for(i = 18; i < 24; i++){
+		paint_pixel(x+n,y+i,0);
+		n++;
+		paint_pixel(x+m,y+i,0);
+		m--;
+	}
 	return 0;
 }
 

@@ -6,5 +6,11 @@ int open_game();
 
 int mouse_game_handler();
 
+int score_handler();
+
+int time_handler();
+
+int bullets_handler();
+
 
 #endif /* _GAME_H */

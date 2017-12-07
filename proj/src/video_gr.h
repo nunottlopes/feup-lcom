@@ -29,15 +29,21 @@ int vg_exit(void);
 
 void * vg_open(unsigned short mode);
 
-int draw_square(unsigned short x, unsigned short y, unsigned short size, unsigned long color);
-
 int paint_pixel(unsigned short x, unsigned short y, unsigned long color);
-
-int draw_line(unsigned short xi, unsigned short yi, unsigned short xf, unsigned short yf, unsigned long color);
 
 int draw_pixmap(char *pixmap, short x_min, short y_min, int width, int height);
 
 int clean_screen();
+
+int draw_time_score_bar();
+
+int draw_number(int number, int x, int y);
+
+int draw_bullets(int number);
+
+int draw_scope(int x, int y);
+
+int clean_scope(int x, int y);
 
  /** @} end of video_gr */
  
