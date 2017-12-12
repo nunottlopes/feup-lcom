@@ -12,5 +12,7 @@ int time_handler();
 
 int bullets_handler();
 
+int lives_handler();
+
 
 #endif /* _GAME_H */

@@ -57,9 +57,9 @@ int score_points = 0; //score of the game, for every hit the player gets 10 poin
 int bullets = 10; //bullets in the weapon, every time space bar is pressed they are recharged
 int game_time = 0; //the time the player plays the game (in seconds)
 
-//to check how many monsters the player missed, if it is bigger than 5 the game ends
-int monsters_spawn = 0;
-int monsters_hit = 0;
+int player_lives = 5; //number of lives that the player has, if he misses one monster he loses one live
+int hit = 0; //if 0 the monster was not yet hit, if 1 the monster was already hit
+
 
 int open_game(){
 
@@ -83,6 +83,10 @@ int open_game(){
 	unsigned long mouse; //to clear the mouse buf
 
 	int sair = 0; //variable to exit the game
+
+	//to make the monster first position random
+	monster_current_x = rand() % 960;
+	monster_current_y = (rand() % 674) + 30;
 
 	while (sair != -1){
 		if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
@@ -134,9 +138,12 @@ int open_game(){
 							draw_pixmap(pixmap, 845, 5, width, height);
 							pixmap = read_xpm(bullettext, &width, &height);
 							draw_pixmap(pixmap, 10, 5, width, height);
+							pixmap = read_xpm(lives, &width, &height);
+							draw_pixmap(pixmap, 325, 5, width, height);
 							score_handler();
 							time_handler();
 							bullets_handler();
+							lives_handler();
 						}
 						if(opcao == QUIT) //exit game
 							sair = -1;
@@ -162,16 +169,22 @@ int open_game(){
 						if(timer_counter_2/monster_speed){
 							monster_previous_x = monster_current_x;
 							monster_previous_y = monster_current_y;
-							pixmap = read_xpm(penguin2, &width, &height);
-							draw_pixmap(pixmap, monster_previous_x, monster_previous_y, width, height);
+							if(hit == 0){
+								pixmap = read_xpm(monster2, &width, &height);
+								draw_pixmap(pixmap, monster_previous_x, monster_previous_y, width, height);
+								player_lives--;
+							}
 							draw_scope(mouse_current_x, mouse_current_y);
 							monster_current_x = rand() % 960;
 							monster_current_y = (rand() % 674) + 30;
-							monsters_spawn++;
-							pixmap = read_xpm(penguin1, &width, &height);
-							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+
+							if(hit == 0){
+								pixmap = read_xpm(monster, &width, &height);
+								draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+							}
 							draw_scope(mouse_current_x, mouse_current_y);
 
+							hit = 0;
 							timer_counter_2 = 0;
 						}
 						if(timer_counter_3/60){
@@ -182,15 +195,14 @@ int open_game(){
 						timer_counter_1++;
 						timer_counter_2++;
 						timer_counter_3++;
-
-						//check if the player missed 5 monsters and if so the game is over
-						if((monsters_spawn - monsters_hit) > 5)
+						lives_handler();
+						if(player_lives == 0)
 							opcao = GAME_OVER;
 					}
 					if(opcao == GAME_OVER){
 						//cleans the screen, waits for 3 seconds and then exits the game
 						//clean_screen();
-
+						//sleep(3);
 						sair = -1;
 					}
 				}
@@ -206,20 +218,28 @@ int open_game(){
 						mouseposition = mouse_game_handler();
 						if(mouseposition == 2){
 							clean_scope(mouse_previous_x, mouse_previous_y);
-							pixmap = read_xpm(penguin1, &width, &height);
+							if(hit == 0){
+								pixmap = read_xpm(monster, &width, &height);
+								draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+							}
+						}
+						if (hit == 0){
+							pixmap = read_xpm(monster, &width, &height);
 							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
 						}
-						pixmap = read_xpm(penguin1, &width, &height);
-						draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
 						draw_scope(mouse_current_x, mouse_current_y);
 
 						//shooting (pressing mouse left button)
 						if((rato.LB == 1) && (rato.x == 0) && (rato.y == 0) && (mouseposition == 2)){
 							if(bullets > 0){
 								//code to handle if the player hit the monster
-								if((mouse_current_x > (monster_current_x - 12)) && (mouse_current_x < (monster_current_x + 52)) && (mouse_current_y > (monster_current_y - 12)) && (mouse_current_y < (monster_current_y + 52))){
-									score_points += 10; //for each monster hit the score increases in 10 points
-									monsters_hit++;
+								if(hit == 0){
+									if((mouse_current_x > (monster_current_x - 12)) && (mouse_current_x < (monster_current_x + 52)) && (mouse_current_y > (monster_current_y - 12)) && (mouse_current_y < (monster_current_y + 52))){
+										pixmap = read_xpm(monster2, &width, &height);
+										draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+										score_points += 10; //for each monster hit the score increases in 10 points
+										hit = 1;
+									}
 								}
 								bullets--;
 							}
@@ -244,6 +264,26 @@ int open_game(){
 		return 1;
 	if(timer_unsubscribe_int() == -1)
 		return 1;
+
+	//AT THE END OF THE GAME if it's GAME OVER
+	if(opcao == GAME_OVER){
+		//cleans the screen, only showing the time, score,... accomplished and showing "GAME OVER", then waits for 3 seconds and exits the game
+		clean_screen();
+		draw_time_score_bar();
+		pixmap = read_xpm(time, &width, &height);
+		draw_pixmap(pixmap, 654, 5, width, height);
+		pixmap = read_xpm(score, &width, &height);
+		draw_pixmap(pixmap, 845, 5, width, height);
+		pixmap = read_xpm(bullettext, &width, &height);
+		draw_pixmap(pixmap, 10, 5, width, height);
+		pixmap = read_xpm(lives, &width, &height);
+		draw_pixmap(pixmap, 325, 5, width, height);
+		score_handler();
+		time_handler();
+		bullets_handler();
+		lives_handler();
+		sleep(3);
+	}
 
 	vg_exit();
 
@@ -347,5 +387,10 @@ int time_handler(){
 
 int bullets_handler(){
 	draw_bullets(bullets);
+	return 0;
+}
+
+int lives_handler(){
+	draw_lives(player_lives);
 	return 0;
 }

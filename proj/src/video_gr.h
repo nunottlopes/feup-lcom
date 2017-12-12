@@ -41,6 +41,8 @@ int draw_number(int number, int x, int y);
 
 int draw_bullets(int number);
 
+int draw_lives(int number);
+
 int draw_scope(int x, int y);
 
 int clean_scope(int x, int y);

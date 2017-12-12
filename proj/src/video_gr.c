@@ -450,6 +450,89 @@ int draw_bullets(int number){
 	}
 }
 
+int draw_lives(int number){
+	int width, height;
+	char *pixmap;
+	switch(number){
+	case 5:
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	case 4:
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	case 3:
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	case 2:
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	case 1:
+		pixmap = read_xpm(heart, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	case 0:
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 429, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 446, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 463, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 480, 7, width, height);
+		pixmap = read_xpm(heart2, &width, &height);
+		draw_pixmap(pixmap, 497, 7, width, height);
+		break;
+	}
+
+
+
+	return 0;
+}
+
 int draw_scope(int x, int y){
 	int i, n, m;
 	for(i = 7; i < 18; i++){
