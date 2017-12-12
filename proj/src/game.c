@@ -44,9 +44,6 @@ int mouse_current_y = 384; //current y position of the mouse
 int mouse_previous_x = 512; //previous x position to clear the last position of the mouse
 int mouse_previous_y = 384; //previous y position to clear the last position of the mouse
 
-int timer_counter_1 = 0;
-int timer_counter_2 = 0;
-int timer_counter_3 = 0;
 int monster_current_x = 512; //current x position of the monster
 int monster_current_y = 384; //current y position of the monster
 int monster_previous_x = 512; //previous x position to clear the last position of the monster
@@ -56,7 +53,6 @@ int monster_speed = 120; //the monster starts with a delay of 2 seconds, every 5
 int score_points = 0; //score of the game, for every hit the player gets 10 points
 int bullets = 10; //bullets in the weapon, every time space bar is pressed they are recharged
 int game_time = 0; //the time the player plays the game (in seconds)
-
 int player_lives = 5; //number of lives that the player has, if he misses one monster he loses one live
 int hit = 0; //if 0 the monster was not yet hit, if 1 the monster was already hit
 
@@ -87,6 +83,10 @@ int open_game(){
 	//to make the monster first position random
 	monster_current_x = rand() % 960;
 	monster_current_y = (rand() % 674) + 30;
+
+	int timer_counter_1 = 0;
+	int timer_counter_2 = 0;
+	int timer_counter_3 = 0;
 
 	while (sair != -1){
 		if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
@@ -192,6 +192,12 @@ int open_game(){
 							time_handler();
 							timer_counter_3 = 0;
 						}
+						if(hit == 0){
+							pixmap = read_xpm(monster, &width, &height);
+							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+						}
+						draw_scope(mouse_current_x, mouse_current_y);
+
 						timer_counter_1++;
 						timer_counter_2++;
 						timer_counter_3++;
@@ -218,10 +224,6 @@ int open_game(){
 						mouseposition = mouse_game_handler();
 						if(mouseposition == 2){
 							clean_scope(mouse_previous_x, mouse_previous_y);
-							if(hit == 0){
-								pixmap = read_xpm(monster, &width, &height);
-								draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
-							}
 						}
 						if (hit == 0){
 							pixmap = read_xpm(monster, &width, &height);
@@ -278,6 +280,8 @@ int open_game(){
 		draw_pixmap(pixmap, 10, 5, width, height);
 		pixmap = read_xpm(lives, &width, &height);
 		draw_pixmap(pixmap, 325, 5, width, height);
+		pixmap = read_xpm(gameover, &width, &height);
+		draw_pixmap(pixmap, 165, 300, width, height);
 		score_handler();
 		time_handler();
 		bullets_handler();
