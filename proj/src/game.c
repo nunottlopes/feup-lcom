@@ -17,13 +17,16 @@
 #include "video_gr.h"
 #include "mouse.h"
 #include "game.h"
+#include "rtc.h"
 
 //State machine to control the game
 enum menu{
-	START,	//start button
-	QUIT,	//quit button
+	START,		//start button
+	HIGHSCORES,	//highscores button
+	QUIT,		//quit button
 	GAME_ON,	//game running
-	GAME_OVER	//game ended
+	GAME_OVER,	//game ended
+	SCORES 		//show highscores
 };
 
 //Struct to control the mouse
@@ -56,13 +59,9 @@ int game_time = 0; //the time the player plays the game (in seconds)
 int player_lives = 5; //number of lives that the player has, if he misses one monster he loses one live
 int hit = 0; //if 0 the monster was not yet hit, if 1 the monster was already hit
 
-
 int open_game(){
 
 	vg_open(0x105); //1024x768
-
-	int width, height;
-	char *pixmap;
 
 	int ipc_status, r;
 	message msg;
@@ -88,6 +87,21 @@ int open_game(){
 	int timer_counter_2 = 0;
 	int timer_counter_3 = 0;
 
+	Sprite* title = create_sprite(titulo);
+	Sprite* playbutton = create_sprite(play);
+	Sprite* playbutton2 = create_sprite(play2);
+	Sprite* highscoresbutton = create_sprite(highscores);
+	Sprite* highscoresbutton2 = create_sprite(highscores2);
+	Sprite* quitbutton = create_sprite(quit);
+	Sprite* quitbutton2 = create_sprite(quit2);
+	Sprite* time_bar = create_sprite(time);
+	Sprite* score_bar = create_sprite(score);
+	Sprite* bullettext_bar = create_sprite(bullettext);
+	Sprite* lives_bar = create_sprite(lives);
+	Sprite* monster_sprite = create_sprite(monster);
+	Sprite* monster_sprite2 = create_sprite(monster2);
+	Sprite* gameover_sprite = create_sprite(gameover);
+
 	while (sair != -1){
 		if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
 			printf("driver_receive failed with: %d", r);
@@ -101,30 +115,60 @@ int open_game(){
 				if (msg.NOTIFY_ARG & irq_set_kbd) {
 					type = kbd_test_scan_C();
 					if(opcao == START){
-						pixmap = read_xpm(titulo, &width, &height);
-						draw_pixmap(pixmap, 184, 100, width, height);
-						pixmap = read_xpm(play2, &width, &height);
-						draw_pixmap(pixmap, 362, 340, width, height);
-						pixmap = read_xpm(quit, &width, &height);
-						draw_pixmap(pixmap, 379, 480, width, height);
+						draw_sprite(title,184,75);
+						draw_sprite(playbutton2,362,300);
+						draw_sprite(highscoresbutton,167,430);
+						draw_sprite(quitbutton,379,560);
+					}
+					if(opcao == HIGHSCORES){
+						draw_sprite(title,184,75);
+						draw_sprite(playbutton,362,300);
+						draw_sprite(highscoresbutton2,167,430);
+						draw_sprite(quitbutton,379,560);
 					}
 					if(opcao == QUIT){
-						pixmap = read_xpm(titulo, &width, &height);
-						draw_pixmap(pixmap, 184, 100, width, height);
-						pixmap = read_xpm(play, &width, &height);
-						draw_pixmap(pixmap, 362, 340, width, height);
-						pixmap = read_xpm(quit2, &width, &height);
-						draw_pixmap(pixmap, 379, 480, width, height);
+						draw_sprite(title,184,75);
+						draw_sprite(playbutton,362,300);
+						draw_sprite(highscoresbutton,167,430);
+						draw_sprite(quitbutton2,379,560);
 					}
 					if (type == ESC){
-						sair = -1;
+						if(opcao == SCORES){
+							opcao = START;
+							draw_sprite(title,184,75);
+							draw_sprite(playbutton2,362,300);
+							draw_sprite(highscoresbutton,167,430);
+							draw_sprite(quitbutton,379,560);
+						}
+						else if(opcao == GAME_OVER){
+							timer_counter_1 = 0;
+							timer_counter_2 = 0;
+							timer_counter_3 = 0;
+							score_points = 0;
+							bullets = 10;
+							game_time = 0;
+							player_lives = 5;
+							hit = 0;
+							opcao = START;
+							clean_screen();
+							draw_sprite(title,184,75);
+							draw_sprite(playbutton2,362,300);
+							draw_sprite(highscoresbutton,167,430);
+							draw_sprite(quitbutton,379,560);
+						}
+						else
+							sair = -1;
 					}
 					if(type == SETA_CIMA){
 						if(opcao == QUIT)
+							opcao = HIGHSCORES;
+						else if(opcao == HIGHSCORES)
 							opcao = START;
 					}
 					if(type == SETA_BAIXO){
 						if(opcao == START)
+							opcao = HIGHSCORES;
+						else if(opcao == HIGHSCORES)
 							opcao = QUIT;
 					}
 					if(type == ENTER){
@@ -132,18 +176,21 @@ int open_game(){
 							opcao = GAME_ON;
 							clean_screen();
 							draw_time_score_bar();
-							pixmap = read_xpm(time, &width, &height);
-							draw_pixmap(pixmap, 654, 5, width, height);
-							pixmap = read_xpm(score, &width, &height);
-							draw_pixmap(pixmap, 845, 5, width, height);
-							pixmap = read_xpm(bullettext, &width, &height);
-							draw_pixmap(pixmap, 10, 5, width, height);
-							pixmap = read_xpm(lives, &width, &height);
-							draw_pixmap(pixmap, 325, 5, width, height);
+							draw_sprite(time_bar,654,5);
+							draw_sprite(score_bar,845,5);
+							draw_sprite(bullettext_bar,10,5);
+							draw_sprite(lives_bar,325,5);
 							score_handler();
 							time_handler();
 							bullets_handler();
 							lives_handler();
+						}
+						if(opcao == HIGHSCORES){
+							opcao = SCORES;
+							clean_screen();
+
+							//code to show highscores
+
 						}
 						if(opcao == QUIT) //exit game
 							sair = -1;
@@ -170,8 +217,7 @@ int open_game(){
 							monster_previous_x = monster_current_x;
 							monster_previous_y = monster_current_y;
 							if(hit == 0){
-								pixmap = read_xpm(monster2, &width, &height);
-								draw_pixmap(pixmap, monster_previous_x, monster_previous_y, width, height);
+								draw_sprite(monster_sprite2,monster_previous_x,monster_previous_y);
 								player_lives--;
 							}
 							draw_scope(mouse_current_x, mouse_current_y);
@@ -179,8 +225,7 @@ int open_game(){
 							monster_current_y = (rand() % 674) + 30;
 
 							if(hit == 0){
-								pixmap = read_xpm(monster, &width, &height);
-								draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+								draw_sprite(monster_sprite,monster_current_x,monster_current_y);
 							}
 							draw_scope(mouse_current_x, mouse_current_y);
 
@@ -193,8 +238,7 @@ int open_game(){
 							timer_counter_3 = 0;
 						}
 						if(hit == 0){
-							pixmap = read_xpm(monster, &width, &height);
-							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+							draw_sprite(monster_sprite,monster_current_x,monster_current_y);
 						}
 						draw_scope(mouse_current_x, mouse_current_y);
 
@@ -206,10 +250,10 @@ int open_game(){
 							opcao = GAME_OVER;
 					}
 					if(opcao == GAME_OVER){
-						//cleans the screen, waits for 3 seconds and then exits the game
-						//clean_screen();
-						//sleep(3);
-						sair = -1;
+						clean_scope(mouse_current_x, mouse_current_y);
+						draw_sprite(monster_sprite2,monster_current_x,monster_current_y);
+						draw_sprite(gameover_sprite,165,300);
+
 					}
 				}
 
@@ -226,8 +270,7 @@ int open_game(){
 							clean_scope(mouse_previous_x, mouse_previous_y);
 						}
 						if (hit == 0){
-							pixmap = read_xpm(monster, &width, &height);
-							draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+							draw_sprite(monster_sprite,monster_current_x,monster_current_y);
 						}
 						draw_scope(mouse_current_x, mouse_current_y);
 
@@ -237,8 +280,7 @@ int open_game(){
 								//code to handle if the player hit the monster
 								if(hit == 0){
 									if((mouse_current_x > (monster_current_x - 12)) && (mouse_current_x < (monster_current_x + 52)) && (mouse_current_y > (monster_current_y - 12)) && (mouse_current_y < (monster_current_y + 52))){
-										pixmap = read_xpm(monster2, &width, &height);
-										draw_pixmap(pixmap, monster_current_x, monster_current_y, width, height);
+										draw_sprite(monster_sprite2,monster_current_x,monster_current_y);
 										score_points += 10; //for each monster hit the score increases in 10 points
 										hit = 1;
 									}
@@ -258,6 +300,21 @@ int open_game(){
 		}
 	}
 
+	destroy_sprite(title);
+	destroy_sprite(playbutton);
+	destroy_sprite(playbutton2);
+	destroy_sprite(highscoresbutton);
+	destroy_sprite(highscoresbutton2);
+	destroy_sprite(quitbutton);
+	destroy_sprite(quitbutton2);
+	destroy_sprite(time_bar);
+	destroy_sprite(score_bar);
+	destroy_sprite(bullettext_bar);
+	destroy_sprite(lives_bar);
+	destroy_sprite(monster_sprite);
+	destroy_sprite(monster_sprite2);
+	destroy_sprite(gameover_sprite);
+
 	end_mouse();
 
 	if(mouse_unsubscribe_int() == -1)
@@ -266,28 +323,6 @@ int open_game(){
 		return 1;
 	if(timer_unsubscribe_int() == -1)
 		return 1;
-
-	//AT THE END OF THE GAME if it's GAME OVER
-	if(opcao == GAME_OVER){
-		//cleans the screen, only showing the time, score,... accomplished and showing "GAME OVER", then waits for 3 seconds and exits the game
-		clean_screen();
-		draw_time_score_bar();
-		pixmap = read_xpm(time, &width, &height);
-		draw_pixmap(pixmap, 654, 5, width, height);
-		pixmap = read_xpm(score, &width, &height);
-		draw_pixmap(pixmap, 845, 5, width, height);
-		pixmap = read_xpm(bullettext, &width, &height);
-		draw_pixmap(pixmap, 10, 5, width, height);
-		pixmap = read_xpm(lives, &width, &height);
-		draw_pixmap(pixmap, 325, 5, width, height);
-		pixmap = read_xpm(gameover, &width, &height);
-		draw_pixmap(pixmap, 165, 300, width, height);
-		score_handler();
-		time_handler();
-		bullets_handler();
-		lives_handler();
-		sleep(3);
-	}
 
 	vg_exit();
 
@@ -318,8 +353,7 @@ int mouse_game_handler(){
 			if(packet[0]&BIT(4)){ //if x is negative
 				signed char x = packet[1];
 				rato.x = x;
-				if (mouse_current_x + rato.x <= 0)
-				{
+				if (mouse_current_x + rato.x <= 0){
 					mouse_current_x = 0;
 				}
 				else
@@ -327,8 +361,7 @@ int mouse_game_handler(){
 			}
 			else{
 				rato.x = packet[1];
-				if (mouse_current_x + rato.x + 25 >= 1024)
-				{
+				if (mouse_current_x + rato.x + 25 >= 1024){
 					mouse_current_x = 1024 - 25;
 				}
 				else
@@ -338,8 +371,7 @@ int mouse_game_handler(){
 			if(packet[0]&BIT(5)){ //if y is negative
 				signed char y = packet[2];
 				rato.y = y;
-				if (mouse_current_y - rato.y + 25 >= 768)
-				{
+				if (mouse_current_y - rato.y + 25 >= 768){
 					mouse_current_y = 768 - 25;
 				}
 				else
@@ -347,8 +379,7 @@ int mouse_game_handler(){
 			}
 			else{
 				rato.y = packet[2];
-				if (mouse_current_y - rato.y <= 30)
-				{
+				if (mouse_current_y - rato.y <= 30){
 					mouse_current_y = 31;
 				}
 				else

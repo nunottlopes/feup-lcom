@@ -9,7 +9,7 @@ clean:
 	rm .depend
 
 PROG= proj
-SRCS= proj.c kbd.c read_xpm.c sprite.c timer.c vbe.c video_gr.c mouse.c game.c
+SRCS= proj.c kbd.c read_xpm.c sprite.c timer.c vbe.c video_gr.c mouse.c game.c rtc.c
 
 CFLAGS= -Wall
 

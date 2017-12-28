@@ -10,7 +10,8 @@
 #include "video_gr.h"
 
 
-Sprite * create_sprite(char*pic[], int x, int y, int xspeed, int yspeed) {
+
+Sprite * create_sprite(char*pic[]) {
 
 	//allocate space for the "object"
 	Sprite*sp = (Sprite*) malloc ( sizeof(Sprite));
@@ -23,11 +24,6 @@ Sprite * create_sprite(char*pic[], int x, int y, int xspeed, int yspeed) {
 		free(sp);
 		return NULL;
 	}
-
-	sp->xspeed = xspeed;
-	sp->yspeed = yspeed;
-	sp->x = x;
-	sp->y = y;
 
 	return sp;
 }
@@ -42,12 +38,9 @@ void destroy_sprite(Sprite *sp){
 }
 
 
-/*Some useful non-visible functions*/
-int draw_sprite(Sprite* sp) {
+int draw_sprite(Sprite* sp, int x, int y) {
 
-	draw_pixmap(sp->map, sp->x, sp->y, sp->width, sp->height);
+	draw_pixmap(sp->map, x, y, sp->width, sp->height);
 	return 0;
 }
-
-
 

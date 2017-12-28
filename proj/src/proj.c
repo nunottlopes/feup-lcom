@@ -12,6 +12,8 @@ int main(int argc, char **argv){
 
 	sef_startup();
 
+	sys_enable_iop(SELF);
+
 	open_game();
 
 	return 0;
