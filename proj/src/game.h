@@ -14,5 +14,12 @@ int bullets_handler();
 
 int lives_handler();
 
+int writeHighscoresFile();
+
+int readHighscoresFile();
+
+int highscore_handler();
+
+int draw_highscores();
 
 #endif /* _GAME_H */

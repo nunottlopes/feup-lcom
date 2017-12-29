@@ -16,10 +16,9 @@
 #define RTC_YEAR			9
 
 
-int rtc_get_time(unsigned long *hour, unsigned long *min, unsigned long *sec);
+int rtc_get_time(unsigned long *hour, unsigned long *min);
 
 int rtc_get_date(unsigned long *dia, unsigned long *mes, unsigned long *ano);
 
-void rtc_test_conf();
 
 #endif /* __RTC_H */

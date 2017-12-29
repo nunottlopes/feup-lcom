@@ -13,6 +13,7 @@
 static Sprite* title = NULL;
 static Sprite* playbutton = NULL;
 static Sprite* playbutton2 = NULL;
+static Sprite* highscoretitle = NULL;
 static Sprite* highscoresbutton = NULL;
 static Sprite* highscoresbutton2 = NULL;
 static Sprite* quitbutton = NULL;
@@ -39,6 +40,7 @@ static Sprite* bullet_sprite = NULL;
 static Sprite* bullet_sprite2 = NULL;
 static Sprite* heart_sprite = NULL;
 static Sprite* heart_sprite2 = NULL;
+static Sprite* bar_sprite = NULL;
 
 Sprite * create_sprite(char*pic[]) {
 
@@ -76,6 +78,7 @@ void createSprites(){
 	title = create_sprite(titulo);
 	playbutton = create_sprite(play);
 	playbutton2 = create_sprite(play2);
+	highscoretitle = create_sprite(highscores3);
 	highscoresbutton = create_sprite(highscores);
 	highscoresbutton2 = create_sprite(highscores2);
 	quitbutton = create_sprite(quit);
@@ -102,12 +105,14 @@ void createSprites(){
 	bullet_sprite2 = create_sprite(bullet2);
 	heart_sprite = create_sprite(heart);
 	heart_sprite2 = create_sprite(heart2);
+	bar_sprite = create_sprite(bar);
 }
 
 void destroySprites(){
 	destroy_sprite(title);
 	destroy_sprite(playbutton);
 	destroy_sprite(playbutton2);
+	destroy_sprite(highscoretitle);
 	destroy_sprite(highscoresbutton);
 	destroy_sprite(highscoresbutton2);
 	destroy_sprite(quitbutton);
@@ -134,6 +139,7 @@ void destroySprites(){
 	destroy_sprite(bullet_sprite2);
 	destroy_sprite(heart_sprite);
 	destroy_sprite(heart_sprite2);
+	destroy_sprite(bar_sprite);
 }
 
 Sprite* getTitle(){
@@ -144,6 +150,9 @@ Sprite* getPlaybutton(){
 }
 Sprite* getPlaybutton2(){
 	return playbutton2;
+}
+Sprite* getHighscorestitle(){
+	return highscoretitle;
 }
 Sprite* getHighscoresbutton(){
 	return highscoresbutton;
@@ -222,5 +231,8 @@ Sprite* getHeart_sprite(){
 }
 Sprite* getHeart_sprite2(){
 	return heart_sprite2;
+}
+Sprite* getBar_sprite(){
+	return bar_sprite;
 }
 

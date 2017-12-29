@@ -20,6 +20,7 @@ void destroySprites();
 Sprite* getTitle();
 Sprite* getPlaybutton();
 Sprite* getPlaybutton2();
+Sprite* getHighscorestitle();
 Sprite* getHighscoresbutton();
 Sprite* getHighscoresbutton2();
 Sprite* getQuitbutton();
@@ -46,5 +47,6 @@ Sprite* getBullet_sprite();
 Sprite* getBullet_sprite2();
 Sprite* getHeart_sprite();
 Sprite* getHeart_sprite2();
+Sprite* getBar_sprite();
 
 #endif
