@@ -9,7 +9,6 @@
 #include "i8254.h"
 #include "kbd.h"
 #include "lmlib.h"
-#include "pixmap.h"
 #include "read_xpm.h"
 #include "sprite.h"
 #include "timer.h"
@@ -87,20 +86,7 @@ int open_game(){
 	int timer_counter_2 = 0;
 	int timer_counter_3 = 0;
 
-	Sprite* title = create_sprite(titulo);
-	Sprite* playbutton = create_sprite(play);
-	Sprite* playbutton2 = create_sprite(play2);
-	Sprite* highscoresbutton = create_sprite(highscores);
-	Sprite* highscoresbutton2 = create_sprite(highscores2);
-	Sprite* quitbutton = create_sprite(quit);
-	Sprite* quitbutton2 = create_sprite(quit2);
-	Sprite* time_bar = create_sprite(time);
-	Sprite* score_bar = create_sprite(score);
-	Sprite* bullettext_bar = create_sprite(bullettext);
-	Sprite* lives_bar = create_sprite(lives);
-	Sprite* monster_sprite = create_sprite(monster);
-	Sprite* monster_sprite2 = create_sprite(monster2);
-	Sprite* gameover_sprite = create_sprite(gameover);
+	createSprites(); //creates all the xpm needed
 
 	while (sair != -1){
 		if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
@@ -115,30 +101,30 @@ int open_game(){
 				if (msg.NOTIFY_ARG & irq_set_kbd) {
 					type = kbd_test_scan_C();
 					if(opcao == START){
-						draw_sprite(title,184,75);
-						draw_sprite(playbutton2,362,300);
-						draw_sprite(highscoresbutton,167,430);
-						draw_sprite(quitbutton,379,560);
+						draw_sprite(getTitle(),184,75);
+						draw_sprite(getPlaybutton2(),362,300);
+						draw_sprite(getHighscoresbutton(),167,430);
+						draw_sprite(getQuitbutton(),379,560);
 					}
 					if(opcao == HIGHSCORES){
-						draw_sprite(title,184,75);
-						draw_sprite(playbutton,362,300);
-						draw_sprite(highscoresbutton2,167,430);
-						draw_sprite(quitbutton,379,560);
+						draw_sprite(getTitle(),184,75);
+						draw_sprite(getPlaybutton(),362,300);
+						draw_sprite(getHighscoresbutton2(),167,430);
+						draw_sprite(getQuitbutton(),379,560);
 					}
 					if(opcao == QUIT){
-						draw_sprite(title,184,75);
-						draw_sprite(playbutton,362,300);
-						draw_sprite(highscoresbutton,167,430);
-						draw_sprite(quitbutton2,379,560);
+						draw_sprite(getTitle(),184,75);
+						draw_sprite(getPlaybutton(),362,300);
+						draw_sprite(getHighscoresbutton(),167,430);
+						draw_sprite(getQuitbutton2(),379,560);
 					}
 					if (type == ESC){
 						if(opcao == SCORES){
 							opcao = START;
-							draw_sprite(title,184,75);
-							draw_sprite(playbutton2,362,300);
-							draw_sprite(highscoresbutton,167,430);
-							draw_sprite(quitbutton,379,560);
+							draw_sprite(getTitle(),184,75);
+							draw_sprite(getPlaybutton2(),362,300);
+							draw_sprite(getHighscoresbutton(),167,430);
+							draw_sprite(getQuitbutton(),379,560);
 						}
 						else if(opcao == GAME_OVER){
 							timer_counter_1 = 0;
@@ -151,10 +137,10 @@ int open_game(){
 							hit = 0;
 							opcao = START;
 							clean_screen();
-							draw_sprite(title,184,75);
-							draw_sprite(playbutton2,362,300);
-							draw_sprite(highscoresbutton,167,430);
-							draw_sprite(quitbutton,379,560);
+							draw_sprite(getTitle(),184,75);
+							draw_sprite(getPlaybutton2(),362,300);
+							draw_sprite(getHighscoresbutton(),167,430);
+							draw_sprite(getQuitbutton(),379,560);
 						}
 						else
 							sair = -1;
@@ -176,10 +162,10 @@ int open_game(){
 							opcao = GAME_ON;
 							clean_screen();
 							draw_time_score_bar();
-							draw_sprite(time_bar,654,5);
-							draw_sprite(score_bar,845,5);
-							draw_sprite(bullettext_bar,10,5);
-							draw_sprite(lives_bar,325,5);
+							draw_sprite(getTime_bar(),654,5);
+							draw_sprite(getScore_bar(),845,5);
+							draw_sprite(getBullettext_bar(),10,5);
+							draw_sprite(getLives_bar(),325,5);
 							score_handler();
 							time_handler();
 							bullets_handler();
@@ -209,7 +195,7 @@ int open_game(){
 					if(opcao == GAME_ON){
 						if(timer_counter_1/300){
 							if(monster_speed > 30){
-								monster_speed -= 5; //still need to check how fast i want the monster to start disappearing fast
+								monster_speed -= 5;
 							}
 							timer_counter_1 = 0;
 						}
@@ -217,7 +203,7 @@ int open_game(){
 							monster_previous_x = monster_current_x;
 							monster_previous_y = monster_current_y;
 							if(hit == 0){
-								draw_sprite(monster_sprite2,monster_previous_x,monster_previous_y);
+								draw_sprite(getMonster_sprite2(),monster_previous_x,monster_previous_y);
 								player_lives--;
 							}
 							draw_scope(mouse_current_x, mouse_current_y);
@@ -225,7 +211,7 @@ int open_game(){
 							monster_current_y = (rand() % 674) + 30;
 
 							if(hit == 0){
-								draw_sprite(monster_sprite,monster_current_x,monster_current_y);
+								draw_sprite(getMonster_sprite(),monster_current_x,monster_current_y);
 							}
 							draw_scope(mouse_current_x, mouse_current_y);
 
@@ -238,7 +224,7 @@ int open_game(){
 							timer_counter_3 = 0;
 						}
 						if(hit == 0){
-							draw_sprite(monster_sprite,monster_current_x,monster_current_y);
+							draw_sprite(getMonster_sprite(),monster_current_x,monster_current_y);
 						}
 						draw_scope(mouse_current_x, mouse_current_y);
 
@@ -251,8 +237,8 @@ int open_game(){
 					}
 					if(opcao == GAME_OVER){
 						clean_scope(mouse_current_x, mouse_current_y);
-						draw_sprite(monster_sprite2,monster_current_x,monster_current_y);
-						draw_sprite(gameover_sprite,165,300);
+						draw_sprite(getMonster_sprite2(),monster_current_x,monster_current_y);
+						draw_sprite(getGameover_sprite(),165,300);
 
 					}
 				}
@@ -270,7 +256,7 @@ int open_game(){
 							clean_scope(mouse_previous_x, mouse_previous_y);
 						}
 						if (hit == 0){
-							draw_sprite(monster_sprite,monster_current_x,monster_current_y);
+							draw_sprite(getMonster_sprite(),monster_current_x,monster_current_y);
 						}
 						draw_scope(mouse_current_x, mouse_current_y);
 
@@ -280,7 +266,7 @@ int open_game(){
 								//code to handle if the player hit the monster
 								if(hit == 0){
 									if((mouse_current_x > (monster_current_x - 12)) && (mouse_current_x < (monster_current_x + 52)) && (mouse_current_y > (monster_current_y - 12)) && (mouse_current_y < (monster_current_y + 52))){
-										draw_sprite(monster_sprite2,monster_current_x,monster_current_y);
+										draw_sprite(getMonster_sprite2(),monster_current_x,monster_current_y);
 										score_points += 10; //for each monster hit the score increases in 10 points
 										hit = 1;
 									}
@@ -300,20 +286,7 @@ int open_game(){
 		}
 	}
 
-	destroy_sprite(title);
-	destroy_sprite(playbutton);
-	destroy_sprite(playbutton2);
-	destroy_sprite(highscoresbutton);
-	destroy_sprite(highscoresbutton2);
-	destroy_sprite(quitbutton);
-	destroy_sprite(quitbutton2);
-	destroy_sprite(time_bar);
-	destroy_sprite(score_bar);
-	destroy_sprite(bullettext_bar);
-	destroy_sprite(lives_bar);
-	destroy_sprite(monster_sprite);
-	destroy_sprite(monster_sprite2);
-	destroy_sprite(gameover_sprite);
+	destroySprites(); //frees all the memory used by the xpm
 
 	end_mouse();
 
@@ -332,16 +305,13 @@ int open_game(){
 int mouse_game_handler(){
 
 	static unsigned char packet[3];
-
 	unsigned long stat,type;
 	sys_inb(STAT_REG, &stat);
 	if(stat & OBF){
 		if(sys_inb(OUT_BUF, &type) != OK)
 			return 1;
 	}
-
 	packet[mouse_counter] = type;
-
 	if ((packet[0] & BIT(3)) != 0){
 		if(mouse_counter != 2){
 			mouse_counter++;
@@ -349,7 +319,6 @@ int mouse_game_handler(){
 		}
 		else{
 			rato.LB = packet[0]&BIT(0);
-
 			if(packet[0]&BIT(4)){ //if x is negative
 				signed char x = packet[1];
 				rato.x = x;
@@ -367,7 +336,6 @@ int mouse_game_handler(){
 				else
 					mouse_current_x += rato.x;
 			}
-
 			if(packet[0]&BIT(5)){ //if y is negative
 				signed char y = packet[2];
 				rato.y = y;
@@ -405,12 +373,9 @@ int score_handler(){
 }
 
 int time_handler(){
-	int width, height;
-	char *pixmap;
 	int segundos = 0;
 	int minutos = 0;
-	pixmap = read_xpm(twodots, &width, &height);
-	draw_pixmap(pixmap, 782, 8, width, height);
+	draw_sprite(getTwodots_sprite(),782,8);
 	minutos =  game_time / 60;
 	segundos = game_time % 60;
 	draw_number(minutos/10,744,7);
