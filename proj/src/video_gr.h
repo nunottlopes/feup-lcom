@@ -27,24 +27,98 @@ void *vg_init(unsigned short mode);
  */
 int vg_exit(void);
 
+/**
+ * @brief Starts Minix video mode
+ *
+ * @param mode chosen for video
+ */
 void * vg_open(unsigned short mode);
 
+/**
+ * @brief Sets the pixel in the x and y position with a certain color
+ *
+ * @param x position of the pixel
+ * @param y position of the pixel
+ * @param color of the pixel
+ *
+ * @return Return 0 upon success and 1 otherwise
+ */
 int paint_pixel(unsigned short x, unsigned short y, unsigned long color);
 
-int draw_pixmap(char *pixmap, short x_min, short y_min, int width, int height);
+/**
+ * @brief Draws a pixmap
+ *
+ * @param pixmap to be drawn
+ * @param x position of the pixmap
+ * @param y position of the pixmap
+ * @param width of the pixmap
+ * @param height of the pixmap
+ *
+ * @return Return 0
+ */
+int draw_pixmap(char *pixmap, short x, short y, int width, int height);
 
+/**
+ * @brief Puts all screen in black color
+ *
+ * @return Return 0
+ */
 int clean_screen();
 
+/**
+ * @brief Draws a green bar on the top
+ *
+ * @return Return 0
+ */
 int draw_time_score_bar();
 
+/**
+ * @brief Draws a number
+ *
+ * @param number to be drawn
+ * @param x position of the number
+ * @param y position of the number
+ *
+ * @return Return 0
+ */
 int draw_number(int number, int x, int y);
 
+/**
+ * @brief Draws the bullets in the top bar
+ *
+ * @param number of bullets
+ *
+ * @return Return 0
+ */
 int draw_bullets(int number);
 
+/**
+ * @brief Draws the lives in the top bar
+ *
+ * @param number of lives
+ *
+ * @return Return 0
+ */
 int draw_lives(int number);
 
+/**
+ * @brief Draws a scope
+ *
+ * @param x position of the scope
+ * @param y position of the scope
+ *
+ * @return Return 0
+ */
 int draw_scope(int x, int y);
 
+/**
+ * @brief Erases the scope
+ *
+ * @param x position of the scope
+ * @param y position of the scope
+ *
+ * @return Return 0
+ */
 int clean_scope(int x, int y);
 
  /** @} end of video_gr */

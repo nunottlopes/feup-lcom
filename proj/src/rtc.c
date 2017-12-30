@@ -46,4 +46,3 @@ int rtc_get_date(unsigned long *dia, unsigned long *mes, unsigned long *ano)
 	return 0;
 }
 
-
