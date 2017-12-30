@@ -3,13 +3,13 @@
 #include <minix/drivers.h>
 #include <minix/com.h>
 #include <minix/driver.h>
+
 #include "kbd.h"
 #include "i8042.h"
 
 //Keyboard functions
 
 static int kbdhook = 0x01;
-extern unsigned long kbdass();
 
 int kbd_subscribe_int() {
 	int kbdhooktemporario = kbdhook;
@@ -34,32 +34,4 @@ unsigned long kbd_test_scan_C(){
 	unsigned long store;
 	sys_inb(OUT_BUF, &store);
 	return store;
-}
-
-int kbd_print(unsigned long type, int flag){
-	int m = 0;
-
-	if (type == TWO_BYTE)
-		return 1;
-
-	 if (flag == 1)
-	 {
-		 if((type & 0x80) != 0x00){
-			 printf("Breakcode: 0xe0 0x%x \n", type);
-		 }
-		 else{
-			 printf("Makecode: 0xe0 0x%x \n", type);
-		 }
-		 flag = 0;
-		 m = 1;
-	 }
-
-	 if (m == 0)
-	 {
-		 if ((type & 0x80) != 0x00)
-			 printf("Breakcode: 0x%x \n",type);
-		 else
-			 printf("Makecode: 0x%x \n", type);
-	 }
-	 return flag;
 }

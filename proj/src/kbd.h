@@ -7,6 +7,4 @@ int kbd_unsubscribe_int();
 
 unsigned long kbd_test_scan_C();
 
-int kbd_print(unsigned long type, int flag);
-
 #endif

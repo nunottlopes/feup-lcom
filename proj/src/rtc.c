@@ -46,16 +46,4 @@ int rtc_get_date(unsigned long *dia, unsigned long *mes, unsigned long *ano)
 	return 0;
 }
 
-/*
-void rtc_test_conf()
-{
-	unsigned long sec, min, hour, dia, mes, ano;
-
-	rtc_get_time(&hour, &min, &sec);
-	rtc_get_date(&dia, &mes,  &ano);
-
-	printf("Date: %d-%d-%d\n", dia, mes, ano);
-	printf("Time: %d:%d:%d\n", hour, min, sec);
-}*/
-
 
